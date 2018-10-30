@@ -1,5 +1,6 @@
 package com.cbsexam;
 
+import cache.ProductCache;
 import com.google.gson.Gson;
 import controllers.ProductController;
 import java.util.ArrayList;
@@ -16,6 +17,11 @@ import utils.Encryption;
 @Path("product")
 public class ProductEndpoints {
 
+
+  // TODO: "Use Caching Layer" fra ProductController er udført nedenunder. 
+  ProductCache productCache;
+  public ProductEndpoints(ProductCache productCache) { this.productCache = productCache;}
+
   /**
    * @param idProduct
    * @return Responses
@@ -27,7 +33,7 @@ public class ProductEndpoints {
     // Call our controller-layer in order to get the order from the DB
     Product product = ProductController.getProduct(idProduct);
 
-    // TODO: Add Encryption to JSON
+    // TODO: Add Encryption to JSON FIX
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(product);
     //Nedenunder er egen kode
@@ -42,10 +48,13 @@ public class ProductEndpoints {
   @Path("/")
   public Response getProducts() {
 
+    // TODO fra Productcontroller "Use Caching Layer" er lavet nedenunder: ProductController er ændret til ProductCache og ForceUpdate er sat til true.
     // Call our controller-layer in order to get the order from the DB
-    ArrayList<Product> products = ProductController.getProducts();
+    ArrayList<Product> products = ProductCache.getProducts(true);
 
-    // TODO: Add Encryption to JSON
+
+
+    // TODO: Add Encryption to JSON FIX
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(products);
     //Nedenunder er egen kode
