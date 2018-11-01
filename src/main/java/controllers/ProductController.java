@@ -98,6 +98,7 @@ public class ProductController {
     }
 
     // TODO: Use caching layer.
+    // Se løsning i ProductEndpoints
     String sql = "SELECT * FROM product";
 
     ResultSet rs = dbCon.query(sql);

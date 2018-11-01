@@ -4,10 +4,24 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.bouncycastle.util.encoders.Hex;
+import sun.security.provider.MD5;
 
 public final class Hashing {
 
   // TODO: You should add a salt and make this secure
+
+  //Laver en random string
+
+  private String salt;
+
+  public void setSalt(String salt) {
+    this.salt = "askj&7s6";
+  }
+  
+  //KIG PÅ SECURE DIS --> src --> utility --> digester.java.
+
+
+
   public static String md5(String rawString) {
     try {
 
@@ -16,6 +30,7 @@ public final class Hashing {
 
       // We convert to byte array
       byte[] byteArray = md.digest(rawString.getBytes());
+
 
       // Initialize a string buffer
       StringBuffer sb = new StringBuffer();

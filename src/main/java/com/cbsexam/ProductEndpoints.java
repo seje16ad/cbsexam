@@ -18,9 +18,10 @@ import utils.Encryption;
 public class ProductEndpoints {
 
 
-  // TODO: "Use Caching Layer" fra ProductController er udført nedenunder. 
-  ProductCache productCache;
-  public ProductEndpoints(ProductCache productCache) { this.productCache = productCache;}
+  //TODO fra ProductController (Use Caching Layer).
+  //Vi kan nu hente vores products fra databasen.
+  private static ProductCache productCache = new ProductCache();
+
 
   /**
    * @param idProduct
@@ -48,9 +49,10 @@ public class ProductEndpoints {
   @Path("/")
   public Response getProducts() {
 
-    // TODO fra Productcontroller "Use Caching Layer" er lavet nedenunder: ProductController er ændret til ProductCache og ForceUpdate er sat til true.
+
+    //TODO tilføjet ProductCache i ArrayListen istedet for ProductController.
     // Call our controller-layer in order to get the order from the DB
-    ArrayList<Product> products = ProductCache.getProducts(true);
+    ArrayList<Product> products = productCache.getProducts(true);
 
 
 
