@@ -115,7 +115,7 @@ public class UserController {
             + "', '"
             + user.getLastname()
             + "', '"
-            + Hashing.md5(user.getPassword())
+            + Hashing.setSalt(user.getPassword())
             + "', '"
             + user.getEmail()
             + "', "

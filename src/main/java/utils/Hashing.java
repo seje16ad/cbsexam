@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.bouncycastle.util.encoders.Hex;
+import sun.plugin2.message.Message;
 import sun.security.provider.MD5;
 
 public final class Hashing {
@@ -12,12 +13,15 @@ public final class Hashing {
 
   //Laver en random string
 
-  private String salt;
 
-  public void setSalt(String salt) {
-    this.salt = "askj&7s6";
+    public static String setSalt(String str)  {
+    String salt = "askj&7s6";
+    String md5passwordsalt = str + salt;
+    return md5(md5passwordsalt);
   }
-  
+
+
+
   //KIG PÅ SECURE DIS --> src --> utility --> digester.java.
 
 
