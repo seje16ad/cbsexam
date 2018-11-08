@@ -33,12 +33,12 @@ public class UserController {
       // Get first object, since we only have one
       if (rs.next()) {
         user =
-            new User(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
 
         // return the create object
         return user;
@@ -76,12 +76,12 @@ public class UserController {
       // Loop through DB Data
       while (rs.next()) {
         User user =
-            new User(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
 
         // Add element to list
         users.add(user);
@@ -108,24 +108,25 @@ public class UserController {
     }
 
     // Insert the user in the DB
-    // TODO: Hash the user password before saving it.
+    // TODO: Hash the user password before saving it.: FIX
     int userID = dbCon.insert(
-        "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
-            + user.getFirstname()
-            + "', '"
-            + user.getLastname()
-            + "', '"
-            + Hashing.setSalt(user.getPassword())
-            + "', '"
-            + user.getEmail()
-            + "', "
-            + user.getCreatedTime()
-            + ")");
+            "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
+                    + user.getFirstname()
+                    + "', '"
+                    + user.getLastname()
+                    + "', '"
+                    //setSalt er metoden der er taget fra Hashing-klassen.
+                    + Hashing.setSaltMd5(user.getPassword())
+                    + "', '"
+                    + user.getEmail()
+                    + "', "
+                    + user.getCreatedTime()
+                    + ")");
 
     if (userID != 0) {
       //Update the userid of the user before returning
       user.setId(userID);
-    } else{
+    } else {
       // Return null if user has not been inserted into database
       return null;
     }
@@ -133,4 +134,38 @@ public class UserController {
     // Return user
     return user;
   }
+
+  public static boolean deleteUsers(int id) {
+
+    // Check for DB connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+    User user = UserController.getUser(id);
+    if (user != null) {
+      dbCon.deleteUpdate("DELETE from user WHERE id=" + id);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public static boolean updateUsers(User user, int id) {
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    if (user != null) {
+      dbCon.deleteUpdate("UPDATE user SET first_name '" + user.getFirstname() +
+              "', last_name = '" + user.getLastname() +
+              "', email = '" + user.getEmail() +
+              "', password = '" + user.getPassword() +
+              "', WHERE id = " + id);
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
 }

@@ -9,15 +9,13 @@ import sun.security.provider.MD5;
 
 public final class Hashing {
 
-  // TODO: You should add a salt and make this secure
+  // TODO: You should add a salt and make this secure: FIX
 
-  //Laver en random string
-
-
-    public static String setSalt(String str)  {
+  //Egen kode
+    public static String setSaltMd5(String str)  {
     String salt = "askj&7s6";
-    String md5passwordsalt = str + salt;
-    return md5(md5passwordsalt);
+    String md5passwordSalt = str + salt;
+    return md5(md5passwordSalt);
   }
 
 
@@ -56,7 +54,15 @@ public final class Hashing {
     return null;
   }
 
-  // TODO: You should add a salt and make this secure
+  // TODO: You should add a salt and make this secure FIX
+
+  //Egen kode
+    public static String setSaltSha(String str) {
+      String salt = "gjs43xlg";
+      String sha256passwordSalt = str + salt;
+      return sha(sha256passwordSalt);
+    }
+
   public static String sha(String rawString) {
     try {
       // We load the hashing algoritm we wish to use.

@@ -1,13 +1,11 @@
 package com.cbsexam;
 
+import cache.UserCache;
 import com.google.gson.Gson;
+import com.sun.webkit.dom.MediaListImpl;
 import controllers.UserController;
 import java.util.ArrayList;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import model.User;
@@ -16,6 +14,9 @@ import utils.Log;
 
 @Path("user")
 public class UserEndpoints {
+
+  //Insantierer vores UserCache, så den kan benytttes
+  private static UserCache userCache = new UserCache();
 
   /**
    * @param idUser
@@ -40,7 +41,9 @@ public class UserEndpoints {
     return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
   }
 
-  /** @return Responses */
+  /**
+   * @return Responses
+   */
   @GET
   @Path("/")
   public Response getUsers() {
@@ -95,16 +98,38 @@ public class UserEndpoints {
   }
 
   // TODO: Make the system able to delete users
-  public Response deleteUser(String x) {
+  @DELETE
+  @Path("/delete/{userID}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response deleteUser(@PathParam("userID") int id) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    boolean delete = UserController.deleteUsers(id);
+
+    userCache.getUsers(true);
+    if (delete) {
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("aosdfij" + id).build();
+    } else {
+      return Response.status(400).entity("Could not delete user").build();
+    }
   }
 
   // TODO: Make the system able to update users
-  public Response updateUser(String x) {
+  @POST
+  @Path("/update/{userID}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateUser(@PathParam("userID") int id, String body) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    //"KONVERTERER" user fra json til gson
+    User user = new Gson().fromJson(body, User.class);
+
+    boolean update = UserController.updateUsers(user, id);
+
+    userCache.getUsers(true);
+    if (update) {
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("aosdfij" + id).build();
+    } else {
+      return Response.status(400).entity("Could not update users").build();
+
+    }
   }
 }
