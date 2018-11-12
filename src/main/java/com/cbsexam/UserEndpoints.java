@@ -36,10 +36,16 @@ public class UserEndpoints {
     json = Encryption.encryptDecryptXOR(json);
 
     // Return the user with the status code 200
-    // TODO: What should happen if something breaks down?
-    // TRY-CATCH exception
-    return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    // TODO: What should happen if something breaks down? FIX
+    if (user != null) {
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+      // returner en statusfejl 400
+    } else {
+      return Response.status(400).entity("Could not get user").build();
+    }
   }
+
+
 
   /**
    * @return Responses
@@ -91,13 +97,20 @@ public class UserEndpoints {
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response loginUser(String x) {
+  public Response loginUser(String body) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    User userLogin = new Gson().fromJson(body, User.class);
+
+    String token = UserController.loginUsers(userLogin);
+
+    if (token != null) {
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("logged in" + token).build();
+    } else {
+      return Response.status(400).entity("Could not log in").build();
+    }
   }
 
-  // TODO: Make the system able to delete users
+  // TODO: Make the system able to delete users FIX
   @DELETE
   @Path("/delete/{userID}")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -113,7 +126,7 @@ public class UserEndpoints {
     }
   }
 
-  // TODO: Make the system able to update users
+  // TODO: Make the system able to update users FIX
   @POST
   @Path("/update/{userID}")
   @Consumes(MediaType.APPLICATION_JSON)

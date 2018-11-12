@@ -2,7 +2,13 @@ package controllers;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+
+import cache.UserCache;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -168,4 +174,35 @@ public class UserController {
 
   }
 
+  public static String loginUsers(User userLogin) {
+
+    Log.writeLog(UserController.class.getName(), userLogin,"Login",0);
+
+    //check for db connection
+    if (dbCon == null){
+      dbCon = new DatabaseController();
+    }
+
+    UserCache userCache = new UserCache();
+    ArrayList<User> users = userCache.getUsers(false);
+
+    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+    for (User user : users) {
+      //Verifier
+      if (user.getEmail().equals(userLogin.getEmail()) && user.getPassword().equals(Hashing.md5(userLogin.getPassword()))) {
+
+        try {
+          Algorithm algorithm = Algorithm.HMAC256("secret");
+          String token = JWT.create().withClaim("SEBBEKEY", timestamp).sign(algorithm);
+          return token;
+        } catch (JWTCreationException exception) {
+          //Invalid Signing configuration / Couldn't convert Claims.
+        }
+      }
+    }
+    return null;
+  }
+
 }
+

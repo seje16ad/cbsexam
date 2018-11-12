@@ -20,7 +20,6 @@ public final class Hashing {
 
 
 
-  //KIG PÅ SECURE DIS --> src --> utility --> digester.java.
 
 
 

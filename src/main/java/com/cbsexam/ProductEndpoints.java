@@ -18,7 +18,7 @@ import utils.Encryption;
 public class ProductEndpoints {
 
 
-  //TODO fra ProductController (Use Caching Layer).
+  //fra ProductController (Use Caching Layer).
   //Vi kan nu hente vores products fra databasen.
   private static ProductCache productCache = new ProductCache();
 
@@ -50,7 +50,7 @@ public class ProductEndpoints {
   public Response getProducts() {
 
 
-    //TODO tilføjet ProductCache i ArrayListen istedet for ProductController.
+    //tilføjet ProductCache i ArrayListen istedet for ProductController.
     // Call our controller-layer in order to get the order from the DB
     ArrayList<Product> products = productCache.getProducts(true);
 

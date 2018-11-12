@@ -9,12 +9,14 @@ public class User {
   private String password;
   private long createdTime;
 
+
   public User(int id, String firstname, String lastname, String password, String email) {
     this.id = id;
     this.firstname = firstname;
     this.lastname = lastname;
     this.password = password;
     this.email = email;
+
   }
 
   public int getId() {
