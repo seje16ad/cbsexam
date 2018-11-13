@@ -97,6 +97,7 @@ public class UserEndpoints {
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
+  //Body bruges i Postman
   public Response loginUser(String body) {
 
     User userLogin = new Gson().fromJson(body, User.class);
@@ -104,7 +105,7 @@ public class UserEndpoints {
     String token = UserController.loginUsers(userLogin);
 
     if (token != null) {
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("logged in" + token).build();
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("logged in").build();
     } else {
       return Response.status(400).entity("Could not log in").build();
     }

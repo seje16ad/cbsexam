@@ -19,10 +19,6 @@ public final class Hashing {
   }
 
 
-
-
-
-
   public static String md5(String rawString) {
     try {
 

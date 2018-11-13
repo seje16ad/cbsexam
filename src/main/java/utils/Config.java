@@ -23,6 +23,11 @@ public final class Config {
   // Egen:
   private static long ORDER_TTL;
   private static long USER_TTL;
+  //nøgle til encryption
+  private static String ENCRYPT_KEY;
+
+  //get for EncryptKey
+  public static char[] getEncryptKey() {return ENCRYPT_KEY.toCharArray(); }
 
   public static long getProductTtl() {
     return PRODUCT_TTL;
@@ -108,5 +113,6 @@ public final class Config {
     PRODUCT_TTL = json.get("PRODUCT_TTL").getAsLong();
     ORDER_TTL = json.get("ORDER_TTL").getAsLong();
     USER_TTL = json.get("USER_TTL").getAsLong();
+    ENCRYPT_KEY = json.get("Encrypt_Key").getAsString();
   }
 }

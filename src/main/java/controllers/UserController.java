@@ -173,9 +173,9 @@ public class UserController {
     }
 
   }
-
+// Login metode
   public static String loginUsers(User userLogin) {
-
+    //Log skal også implementeres i deleteUsers og UpdateUsers. Ellers skal den slettes.
     Log.writeLog(UserController.class.getName(), userLogin,"Login",0);
 
     //check for db connection
@@ -185,14 +185,15 @@ public class UserController {
 
     UserCache userCache = new UserCache();
     ArrayList<User> users = userCache.getUsers(false);
-
+  //Timestamp for at skabe en dynamisk variabel - tildeler ny token hver gang.
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
     for (User user : users) {
       //Verifier
-      if (user.getEmail().equals(userLogin.getEmail()) && user.getPassword().equals(Hashing.md5(userLogin.getPassword()))) {
+      if (user.getEmail().equals(userLogin.getEmail()) && user.getPassword().equals(Hashing.setSaltMd5(userLogin.getPassword()))) {
 
         try {
+          //https://github.com/auth0/java-jwt
           Algorithm algorithm = Algorithm.HMAC256("secret");
           String token = JWT.create().withClaim("SEBBEKEY", timestamp).sign(algorithm);
           return token;
@@ -200,8 +201,7 @@ public class UserController {
           //Invalid Signing configuration / Couldn't convert Claims.
         }
       }
-    }
-    return null;
+    } return null;
   }
 
 }
