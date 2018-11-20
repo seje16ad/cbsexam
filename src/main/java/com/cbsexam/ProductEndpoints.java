@@ -18,7 +18,7 @@ import utils.Encryption;
 public class ProductEndpoints {
 
 
-  //fra ProductController (Use Caching Layer).
+  //fra "To Do" ProductController (Use Caching Layer).
   //Vi kan nu hente vores products fra databasen.
   private static ProductCache productCache = new ProductCache();
 

@@ -1,6 +1,7 @@
 package com.cbsexam;
 
 import cache.UserCache;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.sun.webkit.dom.MediaListImpl;
 import controllers.UserController;
@@ -15,7 +16,7 @@ import utils.Log;
 @Path("user")
 public class UserEndpoints {
 
-  //Insantierer vores UserCache, så den kan benytttes
+  //Implementer UserCache
   private static UserCache userCache = new UserCache();
 
   /**
@@ -105,7 +106,7 @@ public class UserEndpoints {
     String token = UserController.loginUsers(userLogin);
 
     if (token != null) {
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("logged in").build();
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("logged in" + token).build();
     } else {
       return Response.status(400).entity("Could not log in").build();
     }
@@ -114,14 +115,15 @@ public class UserEndpoints {
   // TODO: Make the system able to delete users FIX
   @DELETE
   @Path("/delete/{userID}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  public Response deleteUser(@PathParam("userID") int id) {
+  public Response deleteUser(@PathParam("userID") int id, String body) {
 
-    boolean delete = UserController.deleteUsers(id);
+    DecodedJWT token = UserController.verifier(body);
+    Boolean delete = UserController.deleteUsers(token.getClaim("test").asInt());
 
-    userCache.getUsers(true);
+
     if (delete) {
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("aosdfij" + id).build();
+      userCache.getUsers(true);
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("The user was deleted" + id).build();
     } else {
       return Response.status(400).entity("Could not delete user").build();
     }
@@ -138,8 +140,9 @@ public class UserEndpoints {
 
     boolean update = UserController.updateUsers(user, id);
 
-    userCache.getUsers(true);
+
     if (update) {
+      userCache.getUsers(true);
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("aosdfij" + id).build();
     } else {
       return Response.status(400).entity("Could not update users").build();

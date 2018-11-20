@@ -7,8 +7,11 @@ import java.util.ArrayList;
 
 import cache.UserCache;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -142,6 +145,8 @@ public class UserController {
   }
 
   public static boolean deleteUsers(int id) {
+    //Log der fortæller at vi sletter brugere
+    Log.writeLog(UserController.class.getName(), id, "Delete", 0);
 
     // Check for DB connection
     if (dbCon == null) {
@@ -157,6 +162,10 @@ public class UserController {
   }
 
   public static boolean updateUsers(User user, int id) {
+    //Log der fortæller at vi opdatere brugerne
+    Log.writeLog(UserController.class.getName(), user, "Update", 0 );
+
+
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
@@ -195,13 +204,32 @@ public class UserController {
         try {
           //https://github.com/auth0/java-jwt
           Algorithm algorithm = Algorithm.HMAC256("secret");
-          String token = JWT.create().withClaim("SEBBEKEY", timestamp).sign(algorithm);
+          String token = JWT.create().withIssuer("auth0").withClaim("test", user.getId()).withClaim("SEBBEKEY", timestamp).sign(algorithm); //Hvad sker der?
+          user.setToken(token);
           return token;
         } catch (JWTCreationException exception) {
+          exception.getMessage();
           //Invalid Signing configuration / Couldn't convert Claims.
         }
       }
     } return null;
+  }
+
+  public static DecodedJWT verifier(String user) {
+    //Husk log
+
+    String token = user;
+
+    try{
+      Algorithm algorithm = Algorithm.HMAC256("secret"); //Måske skal HMAC256 være byte
+      JWTVerifier verifier =JWT.require(algorithm). withIssuer("auth0").build(); //Læs op på denne linje.
+      DecodedJWT jwt = verifier.verify(token);
+
+      return jwt;
+    } catch (JWTVerificationException e) {
+      e.getMessage();
+    }
+    return null; //Der skal returneres, da det kun er void, som selv returnere.
   }
 
 }
