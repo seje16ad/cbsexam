@@ -144,6 +144,7 @@ public class UserController {
     return user;
   }
 
+  //metode til delete
   public static boolean deleteUsers(int id) {
     //Log der fortæller at vi sletter brugere
     Log.writeLog(UserController.class.getName(), id, "Delete", 0);
@@ -162,7 +163,7 @@ public class UserController {
   }
 
   public static boolean updateUsers(User user, int id) {
-    //Log der fortæller at vi opdatere brugerne
+    //Log der fortæller at vi opdaterer brugerne
     Log.writeLog(UserController.class.getName(), user, "Update", 0 );
 
 

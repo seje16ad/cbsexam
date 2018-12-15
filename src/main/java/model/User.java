@@ -17,6 +17,8 @@ public class User {
     this.lastname = lastname;
     this.password = password;
     this.email = email;
+    //Skal evt. bruges til "nested query" i orderController, så vi kan hente én ordrer istedet for alle ordrer.
+   // this.createdTime = createdTime;
 
   }
 

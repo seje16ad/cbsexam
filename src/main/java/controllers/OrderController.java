@@ -62,7 +62,7 @@ public class OrderController {
       System.out.println(ex.getMessage());
     }
 
-    // Returns null
+
     return order;
   }
 
@@ -77,7 +77,7 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    String sql = "SELECT * FROM order";
+    String sql = "SELECT * FROM orders";
 
     ResultSet rs = dbCon.query(sql);
     ArrayList<Order> orders = new ArrayList<Order>();

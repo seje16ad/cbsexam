@@ -106,7 +106,7 @@ public class UserEndpoints {
     String token = UserController.loginUsers(userLogin);
 
     if (token != null) {
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("logged in" + token).build();
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("logged in with token " + token).build();
     } else {
       return Response.status(400).entity("Could not log in").build();
     }
@@ -128,22 +128,27 @@ public class UserEndpoints {
       return Response.status(400).entity("Could not delete user").build();
     }
   }
+  //User user = new Gson().fromJson(body, User.class);
+  //boolean update = UserController.updateUsers(user, id);
 
-  // TODO: Make the system able to update users FIX
+
+  // TODO: Make the system able to update users
   @POST
-  @Path("/update/{userID}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  public Response updateUser(@PathParam("userID") int id, String body) {
+  @Path("/update/{userID}/{token}")
 
-    //"KONVERTERER" user fra json til gson
+  public Response updateUser(@PathParam("userID") int id, @PathParam("token") String token, String body) {
+
     User user = new Gson().fromJson(body, User.class);
 
-    boolean update = UserController.updateUsers(user, id);
+    DecodedJWT jwt = UserController.verifier(token);
+    Boolean update = UserController.updateUsers(user, jwt.getClaim("test").asInt());
+
+
 
 
     if (update) {
       userCache.getUsers(true);
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("aosdfij" + id).build();
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("User was updated " + id).build();
     } else {
       return Response.status(400).entity("Could not update users").build();
 
