@@ -33,7 +33,7 @@ public class UserEndpoints {
     // TODO: Add Encryption to JSON FIX
     // Convert the user object to json in order to return the object
     String json = new Gson().toJson(user);
-    //Nedenunder er egen kode
+    ////Tilføjer kryptering, hvor der benyttes XOR
     json = Encryption.encryptDecryptXOR(json);
 
     // Return the user with the status code 200
@@ -59,16 +59,20 @@ public class UserEndpoints {
     Log.writeLog(this.getClass().getName(), this, "Get all users", 0);
 
     // Get a list of users
-    ArrayList<User> users = UserController.getUsers();
+    //ArrayList<User> users = UserController.getUsers();
+    // Call our controller-layer in order to get the order from the DB
+    // Cachen bruges som mellemlager, så data kan hentes hurtigere i browser
+    ArrayList<User> users = userCache.getUsers(false);
 
     // TODO: Add Encryption to JSON :FIX
     // Transfer users to json in order to return it to the user
     String json = new Gson().toJson(users);
-    //Nedenunder er egen kode
+    ////Tilføjer kryptering, hvor der benyttes XOR
     json = Encryption.encryptDecryptXOR(json);
 
     // Return the users with the status code 200
     return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+
   }
 
   @POST
@@ -87,6 +91,7 @@ public class UserEndpoints {
 
     // Return the data to the user
     if (createUser != null) {
+      userCache.getUsers(true);
       // Return a response with status 200 and JSON as type
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
@@ -94,15 +99,17 @@ public class UserEndpoints {
     }
   }
 
-  // TODO: Make the system able to login users and assign them a token to use throughout the system.
+  // TODO: Make the system able to login users and assign them a token to use throughout the system FIX
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  //Body bruges i Postman
+
   public Response loginUser(String body) {
 
+    // Read the json from body and transfer it to a user class
     User userLogin = new Gson().fromJson(body, User.class);
 
+    //Bruger UserController til at tilføje en token til brugeren når vedkommende logger ind
     String token = UserController.loginUsers(userLogin);
 
     if (token != null) {
@@ -117,13 +124,16 @@ public class UserEndpoints {
   @Path("/delete/{userID}")
   public Response deleteUser(@PathParam("userID") int id, String body) {
 
+    // Verifier til at tjekke om den token der er givet ved log ind passer
     DecodedJWT token = UserController.verifier(body);
+
+    //Boolean metode til at slette en bruger vha. UserController
     Boolean delete = UserController.deleteUsers(token.getClaim("test").asInt());
 
 
     if (delete) {
       userCache.getUsers(true);
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("The user was deleted" + id).build();
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("The user was deleted with id: " + id).build();
     } else {
       return Response.status(400).entity("Could not delete user").build();
     }
@@ -136,11 +146,15 @@ public class UserEndpoints {
   @POST
   @Path("/update/{userID}/{token}")
 
+  // Når vi opdaterer en bruger benytter vi brugerens ID + token
   public Response updateUser(@PathParam("userID") int id, @PathParam("token") String token, String body) {
 
+    // Read the json from body and transfer it to a user class
     User user = new Gson().fromJson(body, User.class);
 
+    //Verifier den token som brugeren er tildelt
     DecodedJWT jwt = UserController.verifier(token);
+    //Opdaterer brugeren vha. UserControlleren
     Boolean update = UserController.updateUsers(user, jwt.getClaim("test").asInt());
 
 

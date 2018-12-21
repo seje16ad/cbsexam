@@ -17,9 +17,7 @@ import utils.Encryption;
 @Path("product")
 public class ProductEndpoints {
 
-
-  //fra "To Do" ProductController (Use Caching Layer).
-  //Vi kan nu hente vores products fra databasen.
+  //Implementerer productCache
   private static ProductCache productCache = new ProductCache();
 
 
@@ -37,11 +35,15 @@ public class ProductEndpoints {
     // TODO: Add Encryption to JSON FIX
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(product);
-    //Nedenunder er egen kode
+    //Tilføjer kryptering, hvor der benyttes XOR
     json = Encryption.encryptDecryptXOR(json);
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
+    if (product != null) {
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
+    } else {
+      return Response.status(400).entity("Could not get product").build();
+    }
   }
 
   /** @return Responses */
@@ -50,16 +52,17 @@ public class ProductEndpoints {
   public Response getProducts() {
 
 
-    //tilføjet ProductCache i ArrayListen istedet for ProductController.
     // Call our controller-layer in order to get the order from the DB
-    ArrayList<Product> products = productCache.getProducts(true);
+    // Cachen bruges som mellemlager, så data kan hentes hurtigere i browser
+   ArrayList<Product> products = productCache.getProducts(false);
+    //ArrayList<Product> products = ProductController.getProducts();
 
 
 
     // TODO: Add Encryption to JSON FIX
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(products);
-    //Nedenunder er egen kode
+    ////Tilføjer kryptering, hvor der benyttes XOR
     json = Encryption.encryptDecryptXOR(json);
 
 
@@ -83,10 +86,11 @@ public class ProductEndpoints {
 
     // Return the data to the user
     if (createdProduct != null) {
+      productCache.getProducts(true);
       // Return a response with status 200 and JSON as type
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
-      return Response.status(400).entity("Could not create user").build();
+      return Response.status(400).entity("Could not create product").build();
     }
   }
 }

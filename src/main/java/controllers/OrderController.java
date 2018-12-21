@@ -10,6 +10,8 @@ import model.Order;
 import model.User;
 import utils.Log;
 
+import javax.xml.crypto.Data;
+
 public class OrderController {
 
   private static DatabaseController dbCon;
@@ -138,7 +140,9 @@ public class OrderController {
 
     // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts. FIX
 
-    Connection connection = null;
+    // for at få createOrder til at virke
+    Connection connection = DatabaseController.getConnection();
+
 
     // Insert the product in the DB
     //Indsætter Try-catch
